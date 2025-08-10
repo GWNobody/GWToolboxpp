@@ -25,7 +25,7 @@ This allows you to clean up your inventory quickly, efficiently, and with minima
 1. Ensure [GWToolbox](https://github.com/gwdevhub/GWToolboxpp) is running.
 2. Download the latest `Salvify.dll` from the [Releases](../../releases) page.
 3. Place the DLL into your GWToolbox `plugins` folder.
-4. Launch GWToolbox and load **Salvify** via the Plugins menu.
+4. Load **Salvify** via the Plugins menu.
 
 ## Preview
 <img width="366" height="458" alt="grafik" src="https://github.com/user-attachments/assets/03a3c800-44a9-457c-8f04-4609ed346661" />
