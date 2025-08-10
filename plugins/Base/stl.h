@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #ifndef VC_EXTRALEAN
 #define VC_EXTRALEAN
@@ -8,6 +8,7 @@
 #endif
 
 // c++ style c headers
+/*
 #include <cctype>
 #include <cmath>
 #include <cstdint>
@@ -21,13 +22,11 @@
 #include <chrono>
 #include <concepts>
 #include <deque>
-#include <filesystem>
 #include <format>
 #include <fstream>
 #include <functional>
 #include <initializer_list>
 #include <iomanip>
-#include <iostream>
 #include <iterator>
 #include <list>
 #include <map>
@@ -43,7 +42,17 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
+*/
 
+
+#include <iostream>
+#include <filesystem>
+
+#include <ToolboxIni.h>
+
+#include <imgui.h>
+#include <imgui_internal.h>
+/*
 // windows headers
 #include <Windows.h>
 
@@ -63,14 +72,13 @@
 #include <DirectXMath.h>
 
 // libraries
-#include <ToolboxIni.h>
+
 
 #include <IconsFontAwesome5.h>
 #include <mp3.h>
 #include <nlohmann/json.hpp>
+*/
 
-#include <imgui.h>
-#include <imgui_internal.h>
 
 #define VAR_NAME(v) (#v)
 #ifndef PLUGIN_ASSERT

@@ -1,13 +1,13 @@
 add_library(plugin_base INTERFACE)
+
 target_sources(plugin_base INTERFACE
     "plugins/Base/dllmain.cpp"
     "plugins/Base/stl.h"
     "plugins/Base/ToolboxPlugin.h"
     "plugins/Base/ToolboxPlugin.cpp"
     "plugins/Base/PluginUtils.h"
-    "plugins/Base/PluginUtils.cpp"
-    "plugins/Base/ToolboxUIPlugin.h"
-    "plugins/Base/ToolboxUIPlugin.cpp")
+    "plugins/Base/PluginUtils.cpp")
+
 target_include_directories(plugin_base INTERFACE
     "plugins/Base"
     "GWToolboxdll" # careful here, we only get access to exported and header functions!
@@ -16,20 +16,34 @@ target_include_directories(plugin_base INTERFACE
 target_link_libraries(plugin_base INTERFACE
     imgui
     nlohmann_json::nlohmann_json
-    gwca
     IconFontCppHeaders
     GWToolboxdll # for GetFont
     )
+
 target_compile_definitions(plugin_base INTERFACE BUILD_DLL)
 
-macro(add_tb_plugin PLUGIN)
+macro(add_tb_plugin PLUGIN LIBS)
     add_library(${PLUGIN} SHARED)
+
+    # Basisquellen und Header
+    file(GLOB HEADERS
+        "${PROJECT_SOURCE_DIR}/plugins/${PLUGIN}/*.h")
     file(GLOB SOURCES
-        "${PROJECT_SOURCE_DIR}/plugins/${PLUGIN}/*.h"
         "${PROJECT_SOURCE_DIR}/plugins/${PLUGIN}/*.cpp")
-    target_sources(${PLUGIN} PRIVATE ${SOURCES})
+
+    # Optionaler Source-Unterordner (z. B. Salvify)
+    if(EXISTS "${PROJECT_SOURCE_DIR}/plugins/${PLUGIN}/Source")
+        file(GLOB EXTRA_SOURCES
+            "${PROJECT_SOURCE_DIR}/plugins/${PLUGIN}/Source/*.cpp")
+        list(APPEND SOURCES ${EXTRA_SOURCES})
+        target_include_directories(${PLUGIN} PRIVATE "${PROJECT_SOURCE_DIR}/plugins/${PLUGIN}/Include")
+    endif()
+
+    target_sources(${PLUGIN} PRIVATE ${HEADERS} ${SOURCES})
     target_include_directories(${PLUGIN} PRIVATE "${PROJECT_SOURCE_DIR}/plugins/${PLUGIN}")
-    target_link_libraries(${PLUGIN} PRIVATE plugin_base)
+    target_link_libraries(${PLUGIN} PRIVATE plugin_base ${LIBS})
+
+    # Compiler/Linker Optionen
     target_compile_options(${PLUGIN} PRIVATE /wd4201 /wd4505)
     target_compile_options(${PLUGIN} PRIVATE /W4 /WX /Gy)
     target_compile_options(${PLUGIN} PRIVATE $<$<NOT:$<CONFIG:Debug>>:/GL>)
@@ -38,7 +52,8 @@ macro(add_tb_plugin PLUGIN)
     target_link_options(${PLUGIN} PRIVATE $<$<NOT:$<CONFIG:Debug>>:/LTCG /INCREMENTAL:NO>)
     target_link_options(${PLUGIN} PRIVATE $<$<CONFIG:Debug>:/IGNORE:4098 /OPT:NOREF /OPT:NOICF>)
     target_link_options(${PLUGIN} PRIVATE $<$<CONFIG:RelWithDebInfo>:/OPT:NOICF>)
+
     set_target_properties(${PLUGIN} PROPERTIES FOLDER "plugins/")
 endmacro()
 
-add_tb_plugin(ExamplePlugin)
+add_tb_plugin(Salvify gwca)

@@ -48,7 +48,7 @@ public:
 
     [[nodiscard]] virtual const char* Icon() const { return nullptr; }
 
-    [[nodiscard]] virtual bool HasSettings() const { return false; }
+    [[nodiscard]] virtual bool HasSettings() const { return true; }
 
     // return a pointer to a bool that will be used to show/hide the window
     // if you wish to draw, you should consider inheriting from ToolboxUIPlugin.
