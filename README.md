@@ -10,21 +10,19 @@ This allows you to clean up your inventory quickly, efficiently, and with minima
 
 - **One-click operation** – Identify and (optional) salvage in a single step.
 - **Blacklist** - Exclude items from identifying and salvaging.
-- **Salvage Popup** – Prompts you to salvage an item right after it’s identified.
-- **Customizable settings** – Highly customizable.
+- **Salvage Popup** – A prompt asking you to salvage an item right after it’s identified.
 - **Time-saving** – For players who want to focus more on gameplay and less on manual inventory management.
-
 
 ## How It Works
 
-1. Configure your salvage preferences in the plugin settings.
-2. Click the **Salvify** button.
+1. Configure the preference of the plugin in the settings.
+2. Click the button.
 3. Sit back as the plugin automatically identifies and salvages items based on your rules.
 
 
 ## Installation
 
-1. Ensure you have [GWToolbox](https://github.com/gwdevhub/GWToolboxpp) installed and running.
+1. Ensure [GWToolbox](https://github.com/gwdevhub/GWToolboxpp) is running.
 2. Download the latest `Salvify.dll` from the [Releases](../../releases) page.
 3. Place the DLL into your GWToolbox `plugins` folder.
 4. Launch GWToolbox and load **Salvify** via the Plugins menu.
