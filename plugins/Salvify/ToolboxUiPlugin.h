@@ -36,7 +36,7 @@ public:
 
     // Example Weapon
     std::string example_weapon_name = "<c=@ItemRare>Vampiric Wintergreen Bow of Enchanting</c>";
-    std::string example_weapon_info = "<c=@ItemBasic>Piercing Dmg : 15 - 15 </c>\n<c = @ItemRare>Inscription :\" Guided by Fate\"</c>\n<c=@ItemRare>Damage +15% </c><=@ItemDull>(while Enchanted)</c>\n<c=@ItemRare>Life Draining: 5</c>\n<c=@ItemRare>Health regeneration -1</c>\n<c=@ItemRare>Enchantments last 20% longer</c>\n<c=@ItemDull>Two-handed Longbow</c>\n<c=@ItemDull>Customized for Might Tyson</c>";
+    std::string example_weapon_info = "<c=@ItemBasic>Piercing Dmg : 15 - 15 </c>\n<c = @ItemRare>Inscription :\" Guided by Fate\"</c>\n<c=@ItemRare>Damage +15% </c><=@ItemDull>(while Enchanted)</c>\n<c=@ItemRare>Life Draining: 5</c>\n<c=@ItemRare>Health regeneration -1</c>\n<c=@ItemRare>Enchantments last 20% longer</c>\n<c=@ItemDull>Two-handed Longbow</c>\n<c=@ItemDull>Customized for GWNobody</c>";
     
     // Settings
     bool setting_ident_blue = true;

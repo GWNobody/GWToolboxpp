@@ -10,14 +10,14 @@ target_sources(plugin_base INTERFACE
 
 target_include_directories(plugin_base INTERFACE
     "plugins/Base"
-    "GWToolboxdll" # careful here, we only get access to exported and header functions!
+    "GWToolboxdll" 
     ${SIMPLEINI_INCLUDE_DIRS}
     )
 target_link_libraries(plugin_base INTERFACE
     imgui
     nlohmann_json::nlohmann_json
     IconFontCppHeaders
-    GWToolboxdll # for GetFont
+    GWToolboxdll # For GetFont
     )
 
 target_compile_definitions(plugin_base INTERFACE BUILD_DLL)
@@ -25,25 +25,17 @@ target_compile_definitions(plugin_base INTERFACE BUILD_DLL)
 macro(add_tb_plugin PLUGIN LIBS)
     add_library(${PLUGIN} SHARED)
 
-    # Basisquellen und Header
+    # Source and Header
     file(GLOB HEADERS
         "${PROJECT_SOURCE_DIR}/plugins/${PLUGIN}/*.h")
     file(GLOB SOURCES
         "${PROJECT_SOURCE_DIR}/plugins/${PLUGIN}/*.cpp")
 
-    # Optionaler Source-Unterordner (z. B. Salvify)
-    if(EXISTS "${PROJECT_SOURCE_DIR}/plugins/${PLUGIN}/Source")
-        file(GLOB EXTRA_SOURCES
-            "${PROJECT_SOURCE_DIR}/plugins/${PLUGIN}/Source/*.cpp")
-        list(APPEND SOURCES ${EXTRA_SOURCES})
-        target_include_directories(${PLUGIN} PRIVATE "${PROJECT_SOURCE_DIR}/plugins/${PLUGIN}/Include")
-    endif()
-
     target_sources(${PLUGIN} PRIVATE ${HEADERS} ${SOURCES})
     target_include_directories(${PLUGIN} PRIVATE "${PROJECT_SOURCE_DIR}/plugins/${PLUGIN}")
     target_link_libraries(${PLUGIN} PRIVATE plugin_base ${LIBS})
 
-    # Compiler/Linker Optionen
+    # Compiler/Linker Options
     target_compile_options(${PLUGIN} PRIVATE /wd4201 /wd4505)
     target_compile_options(${PLUGIN} PRIVATE /W4 /WX /Gy)
     target_compile_options(${PLUGIN} PRIVATE $<$<NOT:$<CONFIG:Debug>>:/GL>)
