@@ -1,6 +1,6 @@
 // Local
-#include <PluginUtils.h>
 #include "ToolBoxUiPlugin.h"
+#include <PluginUtils.h>
 
 // Global
 #include <Windows.h>
@@ -38,13 +38,15 @@
 namespace {
 
     std::regex reg("<[^>]+>");
-}; 
+};
+
 
 DLLAPI ToolboxPlugin* ToolboxPluginInstance()
 {
     static ToolboxUIPlugin instance;
     return &instance;
 }
+
 
 void ToolboxUIPlugin::Initialize(ImGuiContext* ctx, const ImGuiAllocFns fns, const HMODULE toolbox_dll)
 {
@@ -57,6 +59,7 @@ void ToolboxUIPlugin::Initialize(ImGuiContext* ctx, const ImGuiAllocFns fns, con
     toolbox_handle = toolbox_dll;
     GW::Initialize();
 }
+
 
 void ToolboxUIPlugin::Draw(IDirect3DDevice9*)
 {
@@ -87,7 +90,7 @@ void ToolboxUIPlugin::Draw(IDirect3DDevice9*)
             ImGui::GetFont()->Scale = old_fontsize;
             ImGui::PopFont();
         }
-        if (salvage_listeners_attached) {
+        if (it_update_session) {
             ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(progress_color));
             ImGui::SameLine();
             ImGui::SetCursorPosX((ImGui::GetWindowSize().x - ImGui::CalcTextSize(is_progress).x) * 0.95f);
@@ -141,7 +144,6 @@ void ToolboxUIPlugin::PopUp_Item()
 {
     auto flags = p_lock_move ? ImGuiWindowFlags_NoMove : 0;
     if (ImGui::Begin("Popup Window", &is_open, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_AlwaysAutoResize | flags)) {
-        
         ImVec2 bt_sz = ImGui::GetContentRegionAvail();
 
         std::string name_str = WideToUtf8(item_popup_name_buffer);
@@ -196,7 +198,7 @@ void ToolboxUIPlugin::PopUp_Item()
                 ImGui::GetFont()->Scale = old_fontsize;
                 ImGui::PopFont();
                 scale_item_title = false;
-            } 
+            }
         }
         // click ok when finished adjusting
         ImGui::NewLine();
@@ -257,6 +259,7 @@ void ToolboxUIPlugin::PopUp_Item()
     }
 }
 
+
 void TextCentered(std::string text, ImVec4 color = ImVec4(1.0f, 1.0f, 1.0f, 1.0f))
 {
     auto windowWidth = ImGui::GetWindowSize().x;
@@ -265,6 +268,7 @@ void TextCentered(std::string text, ImVec4 color = ImVec4(1.0f, 1.0f, 1.0f, 1.0f
     ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f);
     ImGui::TextColored(ImVec4(color), text.c_str());
 }
+
 
 void ToolboxUIPlugin::DrawSettings()
 {
@@ -389,7 +393,7 @@ void ToolboxUIPlugin::DrawSettings()
                     ImGui::NewLine();
                     ImGui::TreePop();
 
-                    if (!salvage_listeners_attached && init_salvage_examplepopup == false) {
+                    if (!pending_item.size() && init_salvage_examplepopup == false) {
                         std::copy(example_weapon_name.begin(), example_weapon_name.end(), item_popup_name_buffer);
                         std::copy(example_weapon_info.begin(), example_weapon_info.end(), item_popup_info_buffer);
                         init_salvage_examplepopup = true;
@@ -431,7 +435,7 @@ void ToolboxUIPlugin::DrawSettings()
 
     if (ImGui::TreeNode("Help")) {
         ImGui::NewLine();
-        ImGui::TextColored(ImVec4(text_color_whitegray), "Salvify use the Guild Wars internal API \"GWCA++\" to handle game content.");
+        ImGui::TextColored(ImVec4(text_color_whitegray), "Salvify uses the Guild Wars internal API \"GWCA++\" to handle game content.");
 
         ImGui::NewLine();
         ImGui::Text("Question & Anwser");
@@ -461,7 +465,7 @@ void ToolboxUIPlugin::DrawSettings()
         ImGui::Separator();
         ImGui::TextColored(
             ImVec4(text_color_whitegray),
-            "Building this project was great fun and gave me a glimpse beneath the surface of GWToolbox and its external libraries. My gratitude goes out to the developers of GWToolbox and the GWCA project - without their efforts, it would not have been possible for me to understand even a bit of the logic behind Guild Wars. I'd also like to thank Dear ImGui for providing such a well-designed layout engine."
+            "Building this project was great fun and gave me a glimpse beneath the surface of GWToolbox and its external libraries. My gratitude goes to the developers of GWToolbox and the GWCA project - without their efforts, it would not have been possible for me to understand even a bit of the logic behind Guild Wars. I'd also like to thank Dear ImGui for providing such a well-designed layout engine."
         );
 
         ImGui::NewLine();
@@ -551,66 +555,66 @@ void ToolboxUIPlugin::Setting_WB_Table(std::vector<std::string>& tablecontent, i
                 q.token = tablecontent[a].substr(q.startpos, q.length);
 
                 switch (q.i) {
-                    case 2:
-                        if (q.token == "Enhance") {
-                            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(item_color_blue));
-                        }
-                        else if (q.token == "Uncommon") {
-                            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(item_color_purple));
-                        }
-                        else if (q.token == "Rare") {
-                            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(item_color_gold));
-                        }
-                        else {
-                            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(color_white));
-                        }
-                        break;
+                case 2:
+                    if (q.token == "Enhance") {
+                        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(item_color_blue));
+                    }
+                    else if (q.token == "Uncommon") {
+                        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(item_color_purple));
+                    }
+                    else if (q.token == "Rare") {
+                        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(item_color_gold));
+                    }
+                    else {
+                        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(color_white));
+                    }
+                    break;
 
-                    case 4:
-                        ImGui::PopStyleColor(1);
-                        ImGui::SetItemTooltip(q.token.c_str());
-                        break;
+                case 4:
+                    ImGui::PopStyleColor(1);
+                    ImGui::SetItemTooltip(q.token.c_str());
+                    break;
 
-                    case 0:
-                    case 1:
-                        if (q.i == 0) {
-                            q.model_id = q.token;
-                        }
-                        else if (q.i == 1 && count == 0) {
-                            q.item_id = q.token;
-                        }
-                        else if (q.i == 1 && count == 1) {
-                            break;
-                        }
-                        if (count == 0) {
-                            for (size_t ia = 0; ia < blacklist.size(); ia++) {
-                                if (blacklist[ia].find(q.model_id) != std::string::npos) {
-                                    q.i = 5;
-                                    break;
-                                }
-                            }
-                            if (q.i == 5) {
-                                break;
-                            }
-                        }
-                        else if (!setting_print_blitems && q.i == 0) {
-                            for (size_t ib = 0; ib < whitelist.size(); ib++) {
-                                // if whitelist match blacklist trigger
-                                if (whitelist[ib].find(q.model_id) != std::string::npos) {
-                                    q.compare_table = true;
-                                    break;
-                                }
-                            }
-                            if (!q.compare_table) {
+                case 0:
+                case 1:
+                    if (q.i == 0) {
+                        q.model_id = q.token;
+                    }
+                    else if (q.i == 1 && count == 0) {
+                        q.item_id = q.token;
+                    }
+                    else if (q.i == 1 && count == 1) {
+                        break;
+                    }
+                    if (count == 0) {
+                        for (size_t ia = 0; ia < blacklist.size(); ia++) {
+                            if (blacklist[ia].find(q.model_id) != std::string::npos) {
                                 q.i = 5;
                                 break;
                             }
                         }
+                        if (q.i == 5) {
+                            break;
+                        }
+                    }
+                    else if (!setting_print_blitems && q.i == 0) {
+                        for (size_t ib = 0; ib < whitelist.size(); ib++) {
+                            // if whitelist match blacklist trigger
+                            if (whitelist[ib].find(q.model_id) != std::string::npos) {
+                                q.compare_table = true;
+                                break;
+                            }
+                        }
+                        if (!q.compare_table) {
+                            q.i = 5;
+                            break;
+                        }
+                    }
 
-                    default:
-                        ImGui::TableSetColumnIndex(q.tcount++);
-                        ImGui::TextUnformatted(q.token.c_str());
-                        break;
+                default:
+                    ImGui::TableSetColumnIndex(q.tcount++);
+                    ImGui::TextUnformatted(q.token.c_str());
+                    break;
                 }
                 q.startpos = q.endpos + 1;
                 q.i++;
@@ -637,9 +641,6 @@ void ToolboxUIPlugin::Setting_WB_Table(std::vector<std::string>& tablecontent, i
         ImGui::PopID();
     }
 }
-
-
-
 
 
 void ToolboxUIPlugin::WhitelistItems()
@@ -685,7 +686,6 @@ void ToolboxUIPlugin::WhitelistItems()
                 }
                 std::string item_info = std::to_string(item->model_id) + ":" + std::to_string(item->item_id) + ":" + rarity + ":" + full_item_name + ":" + decoded_s;
                 PushList(whitelist, item_info);
-
             }
         }
     }
@@ -728,7 +728,6 @@ GW::Item* GetSalvageKit()
 
 
 void ToolboxUIPlugin::Update(float)
-
 {
     if (clock() / 100 - time_delay > loop_speed) {
         time_delay = clock() / 100;
@@ -737,11 +736,12 @@ void ToolboxUIPlugin::Update(float)
             if (pending_item.size()) {
                 if (new_pending_item_session) {
                     if (setting_debug_option) {
-                        WriteChatF(GW::Chat::CHANNEL_GWCA1, L"DEBUG_I4S : 0 : %d ; %d", init_listener, init_identify);
+                        WriteChatF(GW::Chat::CHANNEL_GWCA1, L"D_SALVIFY : 0 : %d ; %d", init_listener, init_identify);
                     }
                     is_progress = "";
 
                     new_pending_item_session = false;
+                    it_update_session = true;
                     init_identify = true;
                     me = GW::Agents::GetControlledCharacter();
                 }
@@ -757,7 +757,7 @@ void ToolboxUIPlugin::Update(float)
 
                 if (is_salvaging) {
                     if (setting_debug_option) {
-                        WriteChatF(GW::Chat::CHANNEL_GWCA1, L"DEBUG_I4S : 4 : Salvage...");
+                        WriteChatF(GW::Chat::CHANNEL_GWCA1, L"D_SALVIFY : 4 : Salvage...");
                     }
                     GW::UI::ButtonClick(GW::UI::GetChildFrame(GW::UI::GetFrameByLabel(L"Game"), 0x6, 0x64, 0x6));
                     current_salvage_session.salvage_item_id = 0;
@@ -774,13 +774,13 @@ void ToolboxUIPlugin::Update(float)
                             init_salvaging = false;
                             is_salvaging = true;
                             if (setting_debug_option) {
-                                WriteChatF(GW::Chat::CHANNEL_GWCA1, L"DEBUG_I4S : 3 : s_kit: %d ; item: %d", skit->item_id, pending_item[0]);
+                                WriteChatF(GW::Chat::CHANNEL_GWCA1, L"D_SALVIFY : 3 : s_kit: %d ; item: %d", skit->item_id, pending_item[0]);
                             }
                         }
                         else {
                             WriteChatF(GW::Chat::CHANNEL_GWCA1, L"<c=@ItemBonus>S A L V I F Y</c> : <c=@ItemDull>Salvage kit consumed !</c>");
 
-                            Detach_Salvage_Listener();
+                            uv_reset();
                             pending_item.clear();
                             new_pending_item_session = true;
                         }
@@ -802,8 +802,6 @@ void ToolboxUIPlugin::Update(float)
                         init_salvage_popup = false;
                     }
                 }
-                
-
 
                 if (init_identify) {
                     if (me->GetIsAlive()) {
@@ -834,12 +832,12 @@ void ToolboxUIPlugin::Update(float)
                             is_progress = "+ ";
 
                             if (setting_debug_option) {
-                                WriteChatF(GW::Chat::CHANNEL_GWCA1, L"DEBUG_I4S : 1 : i_kit: %d ; item: %d :: salv = %d ; erase = %d", ikit->item_id, pending_item[0], init_salvaging, erase_item);
+                                WriteChatF(GW::Chat::CHANNEL_GWCA1, L"D_SALVIFY : 1 : i_kit: %d ; item: %d :: salv = %d ; erase = %d", ikit->item_id, pending_item[0], init_salvaging, erase_item);
                             }
                         }
                         else {
                             WriteChatF(GW::Chat::CHANNEL_GWCA1, L"<c=@ItemBonus>S A L V I F Y</c> : <c=@ItemDull>Identification kit consumed !</c>");
-                            
+
                             pending_item.clear();
                             new_pending_item_session = true;
                         }
@@ -857,15 +855,15 @@ void ToolboxUIPlugin::Update(float)
                 if (fallback >= 20) {
                     erase_item = true;
                     if (setting_debug_option) {
-                        WriteChatF(GW::Chat::CHANNEL_GWCA1, L"DEBUG_I4S : Fallback");
+                        WriteChatF(GW::Chat::CHANNEL_GWCA1, L"D_SALVIFY : Fallback");
                     }
                 }
                 if (!salvage_popup) {
                     fallback++;
                 }
             }
-            else if (salvage_listeners_attached) {
-                Detach_Salvage_Listener();
+            else if (it_update_session) {
+                uv_reset();
                 is_progress = "";
                 if (setting_ident_chatprint) {
                     ChatResult();
@@ -874,16 +872,15 @@ void ToolboxUIPlugin::Update(float)
         }
         else if (pending_item.size()) {
             pending_item.clear();
-            Detach_Salvage_Listener();
+            uv_reset();
         }
     }
 }
 
-void ToolboxUIPlugin::Detach_Salvage_Listener()
+
+void ToolboxUIPlugin::uv_reset()
 {
-    
     // reset variable
-    salvage_listeners_attached = false;
     new_pending_item_session = true;
     erase_item = false;
     is_salvaging = false;
@@ -894,19 +891,16 @@ void ToolboxUIPlugin::Detach_Salvage_Listener()
     status_salvage_listener = false;
     salvage_popup = false;
     salvage_session = false;
+    it_update_session = false;
 
     if (setting_debug_option) {
-        WriteChatF(GW::Chat::CHANNEL_GWCA1, L"DEBUG_I4S : X : Detach Packet Listener");
+        WriteChatF(GW::Chat::CHANNEL_GWCA1, L"D_SALVIFY : X : Reset to origin");
     }
 }
 
 
-
-
-
 ToolboxUIPlugin::Item* ToolboxUIPlugin::IdentifyAll()
 {
-
     // IMPORTED ITEM LOCKUP ITERATOR SEQUENCE FROM INVENTORYMANAGER.CPP ~ GWTOOLBOX
     rarid q;
     size_t start_slot = 0;
@@ -986,6 +980,7 @@ ToolboxUIPlugin::Item* ToolboxUIPlugin::IdentifyAll()
     return nullptr;
 }
 
+
 void ToolboxUIPlugin::PushList(std::vector<std::string>& list, std::string text)
 {
     // Just only to display "%"
@@ -993,6 +988,7 @@ void ToolboxUIPlugin::PushList(std::vector<std::string>& list, std::string text)
     std::string new_s = std::regex_replace(text, pattern, "%%");
     list.push_back(new_s);
 }
+
 
 void ToolboxUIPlugin::LoadSettings(const wchar_t* folder)
 {
@@ -1087,7 +1083,7 @@ void ToolboxUIPlugin::LoadSettings(const wchar_t* folder)
     }
 
     if (setting_salvage_module) {
-        text_button = "=- I4S ALL -=";
+        text_button = "=- IS ALL -=";
     }
     else {
         text_button = "= IDENTIFY ALL =";
@@ -1096,6 +1092,7 @@ void ToolboxUIPlugin::LoadSettings(const wchar_t* folder)
     std::copy(example_weapon_name.begin(), example_weapon_name.end(), item_popup_name_buffer);
     std::copy(example_weapon_info.begin(), example_weapon_info.end(), item_popup_info_buffer);
 }
+
 
 void ToolboxUIPlugin::SaveBlacklist()
 {
@@ -1125,7 +1122,6 @@ void ToolboxUIPlugin::SaveBlacklist()
 
 void ToolboxUIPlugin::SaveSettings()
 {
-
     if (!PathCreateDirectorySafe(docpath)) {
         WriteChatF(GW::Chat::CHANNEL_WARNING, L"Fail, something with the save directory goes wrong.");
         return;
@@ -1193,7 +1189,4 @@ void ToolboxUIPlugin::SaveSettings()
     ini.SetValue(Name(), VAR_NAME(col_pop_false_2_3), std::to_string(col_pop_false_2[3]).c_str());
 
     SaveBlacklist();
-
 }
-
-
